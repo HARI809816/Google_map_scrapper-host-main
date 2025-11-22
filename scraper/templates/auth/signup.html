@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - Multi-Industry Data Scraper</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .signup-container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 500px;
+            animation: slideIn 0.6s ease-out;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .signup-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .signup-header h1 {
+            color: #333;
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .signup-header p {
+            color: #666;
+            font-size: 1rem;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+            position: relative;
+            flex: 1;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 15px 20px;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: #fafbfc;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            background: white;
+            transform: translateY(-1px);
+        }
+
+        .form-group .input-icon {
+            position: absolute;
+            right: 15px;
+            top: 38px;
+            color: #999;
+            font-size: 1.1rem;
+        }
+
+        .password-strength {
+            margin-top: 8px;
+            font-size: 0.8rem;
+            display: none;
+        }
+
+        .strength-bar {
+            height: 4px;
+            background: #e1e5e9;
+            border-radius: 2px;
+            margin: 5px 0;
+            overflow: hidden;
+        }
+
+        .strength-fill {
+            height: 100%;
+            width: 0%;
+            transition: all 0.3s ease;
+            border-radius: 2px;
+        }
+
+        .strength-weak { background: #dc3545; }
+        .strength-fair { background: #ffc107; }
+        .strength-good { background: #17a2b8; }
+        .strength-strong { background: #28a745; }
+
+        .btn-primary {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .form-links {
+            text-align: center;
+            margin-top: 25px;
+        }
+
+        .form-links a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .form-links a:hover {
+            color: #764ba2;
+            text-decoration: underline;
+        }
+
+        .alert {
+            padding: 12px 15px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .loading {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .loading-content {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .terms-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 25px;
+            font-size: 0.9rem;
+        }
+
+        .terms-checkbox input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: #667eea;
+        }
+
+        @media (max-width: 480px) {
+            .signup-container {
+                padding: 25px;
+                margin: 10px;
+            }
+
+            .signup-header h1 {
+                font-size: 1.8rem;
+            }
+
+            .form-row {
+                flex-direction: column;
+                gap: 0;
+            }
+
+            .form-group input {
+                padding: 12px 15px;
+            }
+
+            .btn-primary {
+                padding: 12px;
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="signup-container">
+        <div class="signup-header">
+            <h1><i class="fas fa-user-plus"></i> Create Account</h1>
+            <p>Join us to start scraping business data</p>
+        </div>
+
+        <div id="messages">
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+
+        <form id="signupForm" method="post">
+            <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+
+            <div class="form-group">
+                <label for="{{ form.username.id_for_label }}">Username</label>
+                {{ form.username }}
+                <i class="fas fa-user input-icon"></i>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="{{ form.first_name.id_for_label }}">First Name</label>
+                    {{ form.first_name }}
+                    <i class="fas fa-user input-icon"></i>
+                </div>
+                <div class="form-group">
+                    <label for="{{ form.last_name.id_for_label }}">Last Name</label>
+                    {{ form.last_name }}
+                    <i class="fas fa-user input-icon"></i>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.email.id_for_label }}">Email Address</label>
+                {{ form.email }}
+                <i class="fas fa-envelope input-icon"></i>
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.phone.id_for_label }}">Phone Number (Optional)</label>
+                {{ form.phone }}
+                <i class="fas fa-phone input-icon"></i>
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.password1.id_for_label }}">Password</label>
+                {{ form.password1 }}
+                <i class="fas fa-lock input-icon"></i>
+                <div class="password-strength" id="passwordStrength">
+                    <div class="strength-bar">
+                        <div class="strength-fill" id="strengthFill"></div>
+                    </div>
+                    <span id="strengthText">Password strength</span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.password2.id_for_label }}">Confirm Password</label>
+                {{ form.password2 }}
+                <i class="fas fa-lock input-icon"></i>
+            </div>
+
+            <div class="terms-checkbox">
+                <input type="checkbox" id="termsAccept" required>
+                <label for="termsAccept">I agree to the <a href="#" target="_blank">Terms of Service</a> and <a href="#" target="_blank">Privacy Policy</a></label>
+            </div>
+
+            <button type="submit" class="btn-primary" id="signupBtn">
+                <i class="fas fa-user-plus"></i> Create Account
+            </button>
+        </form>
+
+        <div class="form-links">
+            <a href="/login/">Already have an account? Sign In</a>
+        </div>
+    </div>
+
+    <div class="loading" id="loading">
+        <div class="loading-content">
+            <div class="spinner"></div>
+            <p>Creating your account...</p>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('signupForm');
+            const signupBtn = document.getElementById('signupBtn');
+            const loading = document.getElementById('loading');
+            const password1 = document.querySelector('input[name="password1"]');
+            const password2 = document.querySelector('input[name="password2"]');
+            const strengthDiv = document.getElementById('passwordStrength');
+            const strengthFill = document.getElementById('strengthFill');
+            const strengthText = document.getElementById('strengthText');
+
+            // Password strength checker
+            password1.addEventListener('input', function() {
+                const password = this.value;
+                if (password.length === 0) {
+                    strengthDiv.style.display = 'none';
+                    return;
+                }
+
+                strengthDiv.style.display = 'block';
+                const strength = calculatePasswordStrength(password);
+                
+                strengthFill.className = 'strength-fill';
+                strengthFill.classList.add('strength-' + strength.level);
+                strengthText.textContent = strength.text;
+            });
+
+            // Confirm password validation
+            password2.addEventListener('input', function() {
+                if (password1.value && this.value) {
+                    this.style.borderColor = (password1.value === this.value) ? '#28a745' : '#dc3545';
+                } else {
+                    this.style.borderColor = '#e1e5e9';
+                }
+            });
+
+            function calculatePasswordStrength(password) {
+                let score = 0;
+                if (password.length >= 8) score += 1;
+                if (password.length >= 12) score += 1;
+                if (/[a-z]/.test(password)) score += 1;
+                if (/[A-Z]/.test(password)) score += 1;
+                if (/[0-9]/.test(password)) score += 1;
+                if (/[^A-Za-z0-9]/.test(password)) score += 1;
+
+                if (score < 2) return { level: 'weak', text: 'Weak password' };
+                if (score < 4) return { level: 'fair', text: 'Fair password' };
+                if (score < 6) return { level: 'good', text: 'Good password' };
+                return { level: 'strong', text: 'Strong password' };
+            }
+
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+
+                // Client-side validation
+                if (password1.value !== password2.value) {
+                    alert('Passwords do not match.');
+                    return;
+                }
+
+                if (!document.getElementById('termsAccept').checked) {
+                    alert('Please accept the Terms of Service and Privacy Policy.');
+                    return;
+                }
+
+                // Get CSRF token directly from the hidden input
+                const csrfToken = document.querySelector('input[name="csrfmiddlewaretoken"]').value;
+
+                signupBtn.disabled = true;
+                loading.style.display = 'flex';
+
+                const formData = new FormData(form);
+
+                fetch('/signup/', {
+                    method: 'POST',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRFToken': csrfToken
+                    },
+                    body: formData
+                })
+                .then(response => {
+                    // Check if response is actually JSON
+                    const contentType = response.headers.get('content-type');
+                    if (contentType && contentType.includes('application/json')) {
+                        return response.json();
+                    } else {
+                        // If it's HTML, get the text and throw error
+                        return response.text().then(text => {
+                            throw new Error('Server returned HTML instead of JSON');
+                        });
+                    }
+                })
+                .then(result => {
+                    signupBtn.disabled = false;
+                    loading.style.display = 'none';
+
+                    if (result.success) {
+                        // Show success and redirect
+                        const msgDiv = document.createElement('div');
+                        msgDiv.className = 'alert alert-success';
+                        msgDiv.textContent = result.message;
+                        document.getElementById('messages').innerHTML = '';
+                        document.getElementById('messages').appendChild(msgDiv);
+                        setTimeout(() => window.location.href = result.redirect_url, 1500);
+                    } else {
+                        // Show errors
+                        document.getElementById('messages').innerHTML = '';
+                        const errorMsg = document.createElement('div');
+                        errorMsg.className = 'alert alert-error';
+                        errorMsg.textContent = result.message;
+                        document.getElementById('messages').appendChild(errorMsg);
+
+                        if (result.errors) {
+                            for (const [field, errors] of Object.entries(result.errors)) {
+                                errors.forEach(err => {
+                                    const errDiv = document.createElement('div');
+                                    errDiv.className = 'alert alert-error';
+                                    errDiv.textContent = err;
+                                    document.getElementById('messages').appendChild(errDiv);
+                                });
+                            }
+                        }
+                    }
+                })
+                .catch(error => {
+                    signupBtn.disabled = false;
+                    loading.style.display = 'none';
+                    const msgDiv = document.createElement('div');
+                    msgDiv.className = 'alert alert-error';
+                    msgDiv.textContent = 'An error occurred. Please try again.';
+                    document.getElementById('messages').appendChild(msgDiv);
+                    console.error('Error:', error);
+                    
+                    // Optional: Log the actual HTML response for debugging
+                    if (error.message.includes('HTML instead of JSON')) {
+                        console.error('Check your Django server logs - the server returned an HTML error page instead of JSON');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

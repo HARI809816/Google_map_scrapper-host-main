@@ -1,0 +1,42 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg-info/
+*.egg
+*.log
+
+# Virtual environment
+venv/
+env/
+.venv/
+
+# Django
+*.sqlite3
+db.sqlite3
+media/
+staticfiles/
+static/
+
+# Migrations (optional — only ignore if you want to reset migrations)
+# */migrations/*
+# !*/migrations/__init__.py
+
+# Environment variables
+.env
+*.env
+
+# IDE / Editor
+.vscode/
+.idea/
+*.swp
+
+# Byte-compiled / cache
+.cache/
+pytest_cache/
+
+# OS
+Thumbs.db
+.DS_Store
