@@ -18,7 +18,6 @@ env/
 db.sqlite3
 media/
 staticfiles/
-static/
 
 # Migrations (optional — only ignore if you want to reset migrations)
 # */migrations/*
