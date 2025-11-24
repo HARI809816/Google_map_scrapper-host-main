@@ -31,7 +31,9 @@ MIDDLEWARE = [
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'scraper.middleware.NoCacheMiddleware',  # Add this
 ]
-    
+
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+
 
 
 CSRF_COOKIE_SECURE = False
